@@ -12,8 +12,18 @@ import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/inte
 
 contract Funding {
     uint256 minimum = 5e18;
+    address[] public fundersList;
+    mapping(address funder => uint256 fundedAmount) fundingRecords;
+
+    // Func. to receive and record funding
     function fund() public payable {
         require(getPriceUsd(msg.value) >= minimum, "Not enough ETH sent");
+
+        // Store each funders's address
+        fundersList.push(msg.sender);
+
+        // Map all donations to addresses
+        fundingRecords[msg.sender] = fundingRecords[msg.sender] + msg.value;
     }
 
     // Get current, real-world ETH price in terms of wei
