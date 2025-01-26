@@ -1,43 +1,49 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.2;
 
-import { ProjectPrep } from "./ProjectPrep.sol";
-
-contract OptimisedListing {
-    // Map Token identifier to new ProjectPrep instance
-    mapping(string => ProjectPrep) public newProjects;
-
-    // Array to store listed tokens
-    ProjectPrep.Project[] public listedProjects;
-
-    function addNewToken(string memory _projectName, string memory _ticker, uint256 _price, bool _trustedTeam) public {
-        // Create new ProjectPrep instance with desired param
-        // Visibility modifiers not allowed - not needed
-        ProjectPrep newProjectPrep = new ProjectPrep(_projectName, _ticker, _price, _trustedTeam);
-
-        // Map token symbol (ticker) to its ProjectPrep instance
-        newProjects[_ticker] = newProjectPrep;
+contract ProjectPrep {
+    struct Project {
+        string projectName;
+        string ticker;
+        uint256 price;
+        bool trustedTeam;
+        bool isVerified;
     }
-
-    function viewToken(string memory _ticker) public view returns(ProjectPrep.Project memory) {
-        // Check if token exists
-        require(address(newProjects[_ticker]) != address(0), "Token not found");
-
-        // Get token by symbol, then get its details
-        return newProjects[_ticker].getProjectDetails();
+    
+    Project public newProject; //Avoid direct access from outside
+    //Initialize project to deploy
+    constructor(string memory _projectName, string memory _ticker, uint256 _price, bool _trustedTeam) {
+        // Initialize new instance of Project
+        newProject = Project(_projectName, _ticker, _price, _trustedTeam, false);
+        // newProject.projectName = _projectName;
+        // newProject.ticker = _ticker;
+        // newProject.price = _price;
+        // newProject.trustedTeam = _trustedTeam;
+        // newProject.isVerified = false; // Project initially not verified
     }
-
-    // Function to Verify and list a token by symbol
-    // Added 'virtual' keyword so that func can be overidden
-    function listToken(string memory _ticker) public virtual {
-        // Check if token exists
-        require(address(newProjects[_ticker]) != address(0), "Token not found");
-
-        // verify if token is trustworthy
-        bool verify = newProjects[_ticker].verifyToken();
-        require(verify, "Token not trustworthy enough to be listed");
-
-        // Add token to array of listed tokens
-        listedProjects.push(newProjects[_ticker].getProjectDetails());
+    
+    // Verify new projects
+    function verifyToken() public returns(bool) {
+        // Verify project if team is trusted
+        newProject.isVerified = newProject.trustedTeam;
+        return newProject.isVerified; // return verification result
+    }
+    
+    // function getProjectDetails() public view returns(string memory, string memory, uint256, bool, bool) {
+        function getProjectDetails() public view returns(Project memory) {
+            return newProject;
+        // return (
+        //     newProject.projectName,
+        //     newProject.ticker,
+        //     newProject.price,
+        //     newProject.trustedTeam,
+        //     newProject.isVerified
+        // );
     }
 }
+
+// // List new projects on exchange
+//     function ListToken() public {
+//         bool verify = verifyToken();
+//         require(verify, "Only verified tokens can be listed");
+//     }
