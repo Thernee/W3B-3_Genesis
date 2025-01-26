@@ -11,18 +11,26 @@ pragma solidity ^0.8.18;
 import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
 contract Funding {
+    uint256 minimum = 5e18;
     function fund() public payable {
-        require(msg.value >= 1e17, "Not enough ETH sent");
+        require(getPriceUsd(msg.value) >= minimum, "Not enough ETH sent");
     }
 
+    // Get current, real-world ETH price
     function getETHPrice() public view returns(uint256) {
         // ETH/Sepolia address: 0x694AA1769357215DE4FAC081bf1f309aDC325306
         AggregatorV3Interface datafeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
         (,int256 price,,,) = datafeed.latestRoundData();
-        return uint256(price);
-
+        return uint256(price * 1e10);
     }
 
+    // Get ETH price in USD
+    function getPriceUsd(uint256 ethAmount) public view returns(uint256) {
+        uint256 ethPrice = getETHPrice();
+        uint256 priceUsd = (ethAmount * ethPrice) / 1e18;
+        return priceUsd;
+    }
+    
     function getVersion() public view returns(uint256) {
         return AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306).version();
     }
