@@ -16,11 +16,16 @@ contract Funding {
         require(getPriceUsd(msg.value) >= minimum, "Not enough ETH sent");
     }
 
-    // Get current, real-world ETH price
+    // Get current, real-world ETH price in terms of wei
     function getETHPrice() public view returns(uint256) {
         // ETH/Sepolia address: 0x694AA1769357215DE4FAC081bf1f309aDC325306
         AggregatorV3Interface datafeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+
+        // Destructure and get only price from the returned data
+        // Price is returned with 8 decimals
         (,int256 price,,,) = datafeed.latestRoundData();
+
+        // Add 10 decimals to standardize (ETH in wei) the price to 18 decimal places (8 + 10)
         return uint256(price * 1e10);
     }
 
