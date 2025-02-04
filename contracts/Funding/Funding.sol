@@ -29,5 +29,15 @@ contract Funding {
  
         // Map all donations to addresses
         fundingRecords[msg.sender] = fundingRecords[msg.sender] + msg.value;
+        // OR: fundingRecords[msg.sender] += msg.value;
+    }
+
+    // Func. to withdraw/clear record of recieved funds
+    function clearFunding() public {
+        // Iterate through funders list and clear recorded funds
+        for(uint256 idx = 0; idx < fundersList.length; idx++) {
+            address funder = fundersList[idx];
+            fundingRecords[funder] = 0;
+        }
     }
 }
