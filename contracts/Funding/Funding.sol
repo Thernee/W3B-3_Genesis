@@ -13,7 +13,9 @@ import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/inte
 contract Funding {
     uint256 minimum = 5e18;
     address[] public fundersList;
-    mapping(address funder => uint256 fundedAmount) fundingRecords;
+    
+    // Link address to amount funded
+    mapping(address funder => uint256 fundedAmount) public fundingRecords;
 
     // Func. to receive and record funding
     function fund() public payable {
@@ -42,6 +44,9 @@ contract Funding {
     // Get ETH price in USD
     function getPriceUsd(uint256 ethAmount) public view returns(uint256) {
         uint256 ethPrice = getETHPrice();
+
+        // Covert given ETH amount to wei
+        ethAmount = ethAmount * 1e18;
         uint256 priceUsd = (ethAmount * ethPrice) / 1e18;
         return priceUsd;
     }
