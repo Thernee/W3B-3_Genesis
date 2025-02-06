@@ -33,14 +33,35 @@ contract Funding {
     }
 
     // Func. to withdraw/clear record of recieved funds
-    function clearFunding() public {
+    function withdraw() public {
         // Iterate through funders list and clear recorded funds
         for(uint256 idx = 0; idx < fundersList.length; idx++) {
             address funder = fundersList[idx];
             fundingRecords[funder] = 0;
-
-            // Reset all data in fundersList
-            fundersList = new address[](0);
         }
+        // Reset all data in fundersList
+        fundersList = new address[](0);
+
+        /*
+        3 ways to send/withdraw ether:
+
+        1. send
+        2. transfer
+        3. call
+        */
+
+        // using "send": Returns status (bool) - 2300 gas max 
+        // Send all balance of current contract to func caller
+        // bool sendStatus = payable(msg.sender).send(address(this).balance);
+        // require(sendStatus, "Failed to send");
+
+        // Using "transfer": Reverts when failed. 2300 gas max
+        // transfer all balance of current contract to func caller
+        // payable(msg.sender).transfer(address(this).balance);
+
+        // Using "call": recommended method. Returns status (bool) - gas not fixed
+        // Destructure returned data to get status
+        (bool callStatus,/*bytes memory returnedData - Not needed here*/) = payable(msg.sender).call{value: address(this).balance}("");
+        require(callStatus, "Withdrawal Failed");
     }
 }
