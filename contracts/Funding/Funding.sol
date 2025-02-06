@@ -38,6 +38,9 @@ contract Funding {
         for(uint256 idx = 0; idx < fundersList.length; idx++) {
             address funder = fundersList[idx];
             fundingRecords[funder] = 0;
+
+            // Reset all data in fundersList
+            fundersList = new address[](0);
         }
     }
 }
