@@ -40,9 +40,7 @@ contract Funding {
     }
 
     // Func. to withdraw/clear record of recieved funds
-    function withdraw() public {
-        // Restric withdrawal to only the owner
-        require(msg.sender == owner, "Not authorized to withdraw");
+    function withdraw() public ownerOnly{
         
         // Iterate through funders list and clear recorded funds
         for(uint256 idx = 0; idx < fundersList.length; idx++) {
@@ -56,6 +54,14 @@ contract Funding {
         // Destructure returned data to get status
         (bool callStatus,/*bytes memory returnedData - Not needed here*/) = payable(msg.sender).call{value: address(this).balance}("");
         require(callStatus, "Withdrawal Failed");
+    }
+
+    // Func. modifier to veirfy owner
+    // Parentheses are not required when parameters are not used - used here for consistency
+    modifier ownerOnly() {
+        // Restric withdrawal to only the owner
+        require(msg.sender == owner, "Not authorized to withdraw");
+         _;
     }
 }
 
