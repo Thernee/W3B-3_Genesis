@@ -13,11 +13,13 @@ contract Funding {
     // 
     using EthConverter for uint256;
 
-    uint256 minimum = 5e18;
+    // Set to constant because value is known and never chnages
+    uint256 public constant MINIMUM = 5e18;
 
     address[] public fundersList;
 
-    address public owner;
+    // Set to immutable - Never changes once assigned
+    address public immutable owner;
 
     // A constructor to define the owner
     constructor() {
@@ -29,7 +31,7 @@ contract Funding {
 
     // Func. to receive and record funding
     function fund() public payable {
-        require(msg.value.getPriceUsd() >= minimum, "Not enough ETH sent");
+        require(msg.value.getPriceUsd() >= MINIMUM, "Not enough ETH sent");
 
         // Store each funders's address
         fundersList.push(msg.sender);
