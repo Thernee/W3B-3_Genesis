@@ -9,6 +9,9 @@ pragma solidity ^0.8.18;
 
 import { EthConverter } from "./EthConverter.sol";
 
+// Custom error
+error Unauthorized();
+
 contract Funding {
     // 
     using EthConverter for uint256;
@@ -62,7 +65,12 @@ contract Funding {
     // Parentheses are not required when parameters are not used - used here for consistency
     modifier ownerOnly() {
         // Restric withdrawal to only the owner
-        require(msg.sender == i_owner, "Not authorized to withdraw");
+        // require(msg.sender == i_owner, "Not authorized to withdraw");
+
+        // Used custom error instead - more gas efficient
+        if(msg.sender != i_owner) {
+            revert Unauthorized();
+        }
          _;
     }
 }
