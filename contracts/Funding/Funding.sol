@@ -13,17 +13,17 @@ contract Funding {
     // 
     using EthConverter for uint256;
 
-    // Set to constant because value is known and never chnages
+    // Set to constant(gas efficient) because value is known and never chnages
     uint256 public constant MINIMUM = 5e18;
 
     address[] public fundersList;
 
-    // Set to immutable - Never changes once assigned
-    address public immutable owner;
+    // Set to immutable(gas efficient) - Never changes once assigned
+    address public immutable i_owner;
 
     // A constructor to define the owner
     constructor() {
-        owner = msg.sender;
+        i_owner = msg.sender;
     }
     
     // Link address to amount funded
@@ -62,7 +62,7 @@ contract Funding {
     // Parentheses are not required when parameters are not used - used here for consistency
     modifier ownerOnly() {
         // Restric withdrawal to only the owner
-        require(msg.sender == owner, "Not authorized to withdraw");
+        require(msg.sender == i_owner, "Not authorized to withdraw");
          _;
     }
 }
