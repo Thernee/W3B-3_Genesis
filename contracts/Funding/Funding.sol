@@ -73,6 +73,17 @@ contract Funding {
         }
          _;
     }
+
+    // Funcs. to handle ether transfers that dont match any function
+    receive() external payable {
+        // call the fund func. to accept transfers without msg.data
+        fund();
+    }
+
+    fallback() external payable {
+        // call the fund func. to accept transfers with/without msg.data
+        fund();
+    }
 }
 
 /*
